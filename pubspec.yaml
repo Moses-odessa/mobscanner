@@ -1,0 +1,83 @@
+name: mobscanner
+description: "MobScanner — free, local-first, cross-platform document scanner."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.13.0-282.3.beta
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+
+  # State management & DI
+  flutter_riverpod: ^2.6.1
+  riverpod_annotation: ^2.6.1
+
+  # Navigation
+  go_router: ^14.6.2
+
+  # Scanning / camera / import
+  cunning_document_scanner: ^3.0.1
+  camera: ^0.11.0+2
+  image_picker: ^1.1.2
+  file_picker: ^8.1.6
+
+  # Image processing (pure Dart pipeline: filters, perspective, thumbnails)
+  image: ^4.3.0
+
+  # PDF generation, printing & share
+  pdf: ^3.11.1
+  printing: ^5.13.4
+  share_plus: ^10.1.3
+
+  # OCR (offline, multilingual incl. Cyrillic)
+  flutter_tesseract_ocr: ^0.4.30
+
+  # Local database (metadata + full-text search)
+  drift: ^2.22.1
+  sqlite3_flutter_libs: ^0.5.26
+
+  # Filesystem
+  path: ^1.9.0
+  path_provider: ^2.1.5
+
+  # Permissions
+  permission_handler: ^12.0.3
+
+  # Settings persistence
+  shared_preferences: ^2.3.4
+
+  # Utilities
+  intl: any
+  uuid: ^4.5.1
+  collection: ^1.19.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+
+  flutter_lints: ^6.0.0
+  mocktail: ^1.0.4
+
+  # Code generation
+  build_runner: ^2.4.13
+  riverpod_generator: ^2.6.3
+  drift_dev: ^2.22.1
+
+  # App icon & splash
+  flutter_launcher_icons: ^0.14.1
+  flutter_native_splash: ^2.4.3
+
+flutter:
+  uses-material-design: true
+  generate: true
+
+  assets:
+    - assets/tessdata/
