@@ -22,11 +22,15 @@ happen **on device**; there are no servers and no accounts.
 Flutter · Riverpod · go_router · drift (SQLite) · image · pdf/printing ·
 tesseract_ocr · cunning_document_scanner · share_plus.
 
-> **Android toolchain note:** the project pins AGP 8.7.3 / Gradle 8.12. The
-> Tesseract OCR plugin still declares the removed `jcenter()` repository, and
-> Gradle 9 deleted that method entirely. All real artifacts resolve from
-> `google()`/`mavenCentral()`, so 8.x builds fine; revisit once an OCR package
-> with Cyrillic support ships a modern build script.
+### Vendored OCR plugin
+
+`tesseract_ocr` is vendored under [`packages/tesseract_ocr`](packages/tesseract_ocr)
+rather than pulled from pub.dev. Upstream declares the shut-down `jcenter()`
+repository, which Gradle 9 removed outright, and ships a Kotlin stub that
+collides with its own Java implementation under AGP 9's built-in Kotlin. The
+vendored copy is source-only (~205 KB, no binaries — `tesseract4android` comes
+from Maven Central); every local change is documented at the top of
+[`android/build.gradle`](packages/tesseract_ocr/android/build.gradle).
 
 See the architecture overview in `lib/` (feature-first: `core`, `data`,
 `features/{scanner,editor,ocr,library,export,settings}`).
