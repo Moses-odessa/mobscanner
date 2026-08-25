@@ -18,7 +18,10 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace = "global.aspira.mobscanner"
-    compileSdk = flutter.compileSdkVersion
+    // Pinned rather than flutter.compileSdkVersion: transitive AndroidX
+    // artifacts are already built against API 36 and AGP fails the build if
+    // the app compiles against less.
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
     compileOptions {

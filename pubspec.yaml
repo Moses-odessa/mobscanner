@@ -24,7 +24,6 @@ dependencies:
   cunning_document_scanner: ^3.0.1
   camera: ^0.11.0+2
   image_picker: ^1.1.2
-  file_picker: ^8.1.6
 
   # Image processing (pure Dart pipeline: filters, perspective, thumbnails)
   image: ^4.3.0
@@ -36,7 +35,11 @@ dependencies:
 
   # OCR (offline, multilingual incl. Cyrillic).
   # Tesseract on Android; Apple Vision on iOS (native RU/UK support).
-  tesseract_ocr: ^0.5.0
+  # Vendored under packages/ to patch the upstream Android build script, which
+  # declares the removed jcenter() repository and so cannot configure under
+  # Gradle 9. See packages/tesseract_ocr/android/build.gradle.
+  tesseract_ocr:
+    path: packages/tesseract_ocr
 
   # Local database (metadata + full-text search)
   drift: ^2.34.0

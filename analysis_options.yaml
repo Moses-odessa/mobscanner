@@ -11,6 +11,9 @@ include: package:flutter_lints/flutter.yaml
 
 analyzer:
   exclude:
+    # Third-party source vendored verbatim — lint it by its own conventions,
+    # not ours, so our reports stay signal.
+    - packages/**
     - build/**
     - android/**
     - ios/**

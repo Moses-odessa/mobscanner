@@ -1,0 +1,64 @@
+// Vendored from tesseract_ocr 0.5.0 (pub.dev, BSD-3-Clause).
+//
+// Local changes vs upstream:
+//   * jcenter() -> mavenCentral(). JCenter is shut down and Gradle 9 removed
+//     the method entirely, which made the upstream package fail to configure.
+//     Every artifact below actually resolves from google()/mavenCentral().
+//   * Dropped the buildscript classpath pin on AGP 8.2.1 so the plugin builds
+//     with whatever AGP the host app uses.
+//   * compileSdkVersion/minSdkVersion -> modern compileSdk/minSdk properties;
+//     minSdk raised 16 -> 21 (tesseract4android's floor, and the app's).
+//   * lintOptions/packagingOptions -> lint/packaging (renamed in AGP 8).
+//   * Deleted src/main/kotlin: it held a 33-line template stub declaring the
+//     same TesseractOcrPlugin class as the real 154-line Java implementation.
+//     Upstream never applied the Kotlin plugin so it was silently ignored;
+//     AGP 9's built-in Kotlin compiles it and hits a redeclaration error.
+//   * Pinned Java/Kotlin jvmTarget to 17 (they defaulted to 11 vs 21).
+group 'io.paratoner.tesseract_ocr'
+version '1.0'
+
+rootProject.allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        maven { url 'https://jitpack.io' }
+    }
+}
+
+apply plugin: 'com.android.library'
+
+android {
+    namespace 'io.paratoner.tesseract_ocr'
+    compileSdk 35
+
+    defaultConfig {
+        minSdk 21
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    // Pin both toolchains to 17 — upstream left them unset, so Java defaulted
+    // to 11 while Kotlin inherited the JDK's 21 and the build refused to run.
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+
+    lint {
+        disable 'InvalidPackage'
+    }
+}
+
+dependencies {
+    implementation 'cz.adaptech.tesseract4android:tesseract4android:4.8.0'
+    implementation 'androidx.lifecycle:lifecycle-process:2.6.2'
+    implementation 'androidx.lifecycle:lifecycle-runtime:2.6.2'
+    implementation 'androidx.lifecycle:lifecycle-common:2.6.2'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.2'
+    implementation 'androidx.lifecycle:lifecycle-livedata-core:2.6.2'
+    implementation 'androidx.lifecycle:lifecycle-livedata:2.6.2'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel:2.6.2'
+}
