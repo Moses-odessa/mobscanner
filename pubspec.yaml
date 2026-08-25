@@ -16,7 +16,6 @@ dependencies:
 
   # State management & DI
   flutter_riverpod: ^2.6.1
-  riverpod_annotation: ^2.6.1
 
   # Navigation
   go_router: ^14.6.2
@@ -39,7 +38,7 @@ dependencies:
   flutter_tesseract_ocr: ^0.4.30
 
   # Local database (metadata + full-text search)
-  drift: ^2.22.1
+  drift: ^2.34.0
   sqlite3_flutter_libs: ^0.5.26
 
   # Filesystem
@@ -67,9 +66,8 @@ dev_dependencies:
   mocktail: ^1.0.4
 
   # Code generation
-  build_runner: ^2.4.13
-  riverpod_generator: ^2.6.3
-  drift_dev: ^2.22.1
+  build_runner: ^2.16.0
+  drift_dev: ^2.34.0
 
   # App icon & splash
   flutter_launcher_icons: ^0.14.1
@@ -81,3 +79,20 @@ flutter:
 
   assets:
     - assets/tessdata/
+    - assets/fonts/
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  remove_alpha_ios: true
+  image_path: "assets/icon/app_icon.png"
+  adaptive_icon_background: "#2E7D64"
+  adaptive_icon_foreground: "assets/icon/app_icon.png"
+
+flutter_native_splash:
+  color: "#2E7D64"
+  color_dark: "#1B4A3B"
+  image: assets/icon/app_icon.png
+  android_12:
+    color: "#2E7D64"
+    image: assets/icon/app_icon.png

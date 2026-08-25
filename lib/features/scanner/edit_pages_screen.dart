@@ -8,6 +8,7 @@ import '../../core/constants.dart';
 import '../../core/providers.dart';
 import '../../data/document_repository.dart';
 import '../../l10n/app_localizations.dart';
+import '../editor/crop_screen.dart';
 import 'data/scan_service.dart';
 
 /// Review screen shown after capture/import: pick a filter, reorder or drop
@@ -53,6 +54,31 @@ class _EditPagesScreenState extends ConsumerState<EditPagesScreen> {
     });
   }
 
+  /// Open the manual corner-crop editor for one page; re-applies the active
+  /// filter to the warped result.
+  Future<void> _cropPage(int index) async {
+    final warped =
+        await CropScreen.open(context, _originals[index].imageBytes);
+    if (warped == null || !mounted) return;
+    setState(() => _busy = true);
+    const service = ScanService();
+    final quality = ref.read(settingsProvider).scanQuality;
+    final original = await service.processBytes(
+      warped,
+      filter: ScanFilter.original,
+      quality: quality,
+    );
+    final filtered = _filter == ScanFilter.original
+        ? original
+        : await service.processBytes(warped, filter: _filter, quality: quality);
+    if (!mounted) return;
+    setState(() {
+      _originals[index] = original;
+      _current[index] = filtered;
+      _busy = false;
+    });
+  }
+
   Future<void> _save() async {
     setState(() => _busy = true);
     final repo = ref.read(documentRepositoryProvider);
@@ -92,9 +118,8 @@ class _EditPagesScreenState extends ConsumerState<EditPagesScreen> {
                 : ReorderableListView.builder(
                     padding: const EdgeInsets.all(12),
                     itemCount: _current.length,
-                    onReorder: (oldIndex, newIndex) {
+                    onReorderItem: (oldIndex, newIndex) {
                       setState(() {
-                        if (newIndex > oldIndex) newIndex -= 1;
                         _current.insert(newIndex, _current.removeAt(oldIndex));
                         _originals.insert(
                             newIndex, _originals.removeAt(oldIndex));
@@ -106,6 +131,7 @@ class _EditPagesScreenState extends ConsumerState<EditPagesScreen> {
                         key: ValueKey(index),
                         margin: const EdgeInsets.symmetric(vertical: 6),
                         child: ListTile(
+                          onTap: _busy ? null : () => _cropPage(index),
                           leading: SizedBox(
                             width: 56,
                             height: 72,
@@ -115,12 +141,23 @@ class _EditPagesScreenState extends ConsumerState<EditPagesScreen> {
                             ),
                           ),
                           title: Text('${l10n.pagesLabel(1)} ${index + 1}'),
-                          trailing: IconButton(
-                            icon: const Icon(Icons.delete_outline),
-                            onPressed: () => setState(() {
-                              _current.removeAt(index);
-                              _originals.removeAt(index);
-                            }),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.crop),
+                                tooltip: l10n.actionCrop,
+                                onPressed:
+                                    _busy ? null : () => _cropPage(index),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.delete_outline),
+                                onPressed: () => setState(() {
+                                  _current.removeAt(index);
+                                  _originals.removeAt(index);
+                                }),
+                              ),
+                            ],
                           ),
                         ),
                       );

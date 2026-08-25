@@ -51,6 +51,12 @@ app.*.map.json
 # assets/tessdata/README.md)
 assets/tessdata/*.traineddata
 
+# Release signing (never commit)
+android/key.properties
+android/app/upload-keystore.jks
+*.jks
+*.keystore
+
 # Generated code is regenerated via `dart run build_runner build`
 # (kept out of VCS to avoid churn; comment these out to commit them instead)
 *.g.dart

@@ -190,7 +190,7 @@ class _DocumentCard extends StatelessWidget {
             Expanded(
               child: thumbPath != null
                   ? Image.file(File(thumbPath), fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => const _ThumbFallback())
+                      errorBuilder: (_, _, _) => const _ThumbFallback())
                   : const _ThumbFallback(),
             ),
             Padding(

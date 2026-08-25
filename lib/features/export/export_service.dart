@@ -1,12 +1,12 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:share_plus/share_plus.dart';
 
 import '../../core/constants.dart';
-import '../../data/db/database.dart';
 import '../../data/document_repository.dart';
 import '../../data/storage/file_storage.dart';
 
@@ -17,17 +17,52 @@ class ExportService {
 
   final FileStorage _storage;
 
+  pw.Font? _unicodeFont;
+
+  /// Unicode font (bundled NotoSans) so the OCR text layer supports Cyrillic
+  /// and other non-Latin scripts that the built-in PDF fonts cannot encode.
+  Future<pw.Font> _loadUnicodeFont() async {
+    return _unicodeFont ??=
+        pw.Font.ttf(await rootBundle.load('assets/fonts/NotoSans-Regular.ttf'));
+  }
+
   Future<File> buildPdf(DocumentWithPages doc) async {
     final pdf = pw.Document(title: doc.document.title);
+    final hasOcr =
+        doc.pages.any((p) => p.ocrText != null && p.ocrText!.isNotEmpty);
+    final font = hasOcr ? await _loadUnicodeFont() : null;
     for (final page in doc.pages) {
       final bytes = await File(page.imagePath).readAsBytes();
       final image = pw.MemoryImage(bytes);
+      final ocrText = page.ocrText;
       pdf.addPage(
         pw.Page(
           pageFormat: PdfPageFormat.a4,
           margin: pw.EdgeInsets.zero,
-          build: (context) => pw.Center(
-            child: pw.Image(image, fit: pw.BoxFit.contain),
+          build: (context) => pw.Stack(
+            children: [
+              // Invisible OCR text layer underneath the image makes the PDF
+              // searchable and its text selectable/copyable in viewers.
+              if (ocrText != null && ocrText.isNotEmpty)
+                pw.Positioned.fill(
+                  child: pw.Padding(
+                    padding: const pw.EdgeInsets.all(16),
+                    child: pw.Text(
+                      ocrText,
+                      style: pw.TextStyle(
+                        font: font,
+                        fontSize: 6,
+                        color: const PdfColor(1, 1, 1, 0), // fully transparent
+                      ),
+                    ),
+                  ),
+                ),
+              pw.Positioned.fill(
+                child: pw.Center(
+                  child: pw.Image(image, fit: pw.BoxFit.contain),
+                ),
+              ),
+            ],
           ),
         ),
       );

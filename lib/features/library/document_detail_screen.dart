@@ -7,10 +7,8 @@ import 'package:printing/printing.dart';
 
 import '../../core/constants.dart';
 import '../../core/providers.dart';
-import '../../data/db/database.dart';
 import '../../data/document_repository.dart';
 import '../../l10n/app_localizations.dart';
-import '../ocr/ocr_service.dart';
 import '../scanner/scan_flow.dart';
 
 /// Detail view of a single document: page carousel, OCR, export & management.

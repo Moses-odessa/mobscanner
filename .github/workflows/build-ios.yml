@@ -1,0 +1,53 @@
+name: Build iOS (unsigned)
+
+# Ручной запуск: Actions → Build iOS (unsigned) → Run workflow.
+# Собирает iOS-версию БЕЗ подписи на macOS-раннере — проверяет, что проект
+# компилируется под iOS. Артефакт Runner.app НЕ устанавливается на устройство.
+# Для установки/TestFlight нужен Apple Developer account и подпись (.ipa).
+on:
+  workflow_dispatch:
+
+env:
+  FLUTTER_VERSION: '3.47.0-0.3.pre'
+  FLUTTER_CHANNEL: 'beta'
+
+jobs:
+  build:
+    name: Build iOS (no codesign)
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: ${{ env.FLUTTER_CHANNEL }}
+          cache: true
+
+      - run: flutter pub get
+
+      - name: Code generation (Drift, l10n)
+        run: |
+          dart run build_runner build --delete-conflicting-outputs
+          flutter gen-l10n
+
+      # Модели Tesseract не хранятся в git — скачиваем перед сборкой.
+      - name: Download OCR models
+        run: |
+          cd assets/tessdata
+          for lang in eng rus ukr; do
+            curl -sSLO "https://github.com/tesseract-ocr/tessdata_fast/raw/main/$lang.traineddata"
+          done
+
+      - name: Build iOS (release, no codesign)
+        run: flutter build ios --release --no-codesign
+
+      - name: Archive Runner.app
+        run: |
+          cd build/ios/iphoneos
+          zip -r Runner.app.zip Runner.app
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ios-app-unsigned
+          path: build/ios/iphoneos/Runner.app.zip
