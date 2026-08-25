@@ -11,7 +11,8 @@ happen **on device**; there are no servers and no accounts.
 - 🎨 **Filters**: Original, Grayscale, Black & White (adaptive threshold),
   Magic Color.
 - 📄 **Multi-page documents**: reorder, add and delete pages.
-- 🔤 **OCR** (offline, multilingual incl. Cyrillic) via Tesseract.
+- 🔤 **OCR** (offline, multilingual incl. Cyrillic): Tesseract on Android,
+  Apple Vision on iOS.
 - 🗂 **Organize**: folders, rename, full-text search over titles and OCR text.
 - 📤 **Export & share**: PDF, JPG, TXT, and system print — all local.
 - 🌗 Light/dark themes, and EN / RU / UK localization.
@@ -19,7 +20,13 @@ happen **on device**; there are no servers and no accounts.
 ## Tech stack
 
 Flutter · Riverpod · go_router · drift (SQLite) · image · pdf/printing ·
-flutter_tesseract_ocr · cunning_document_scanner · share_plus.
+tesseract_ocr · cunning_document_scanner · share_plus.
+
+> **Android toolchain note:** the project pins AGP 8.7.3 / Gradle 8.12. The
+> Tesseract OCR plugin still declares the removed `jcenter()` repository, and
+> Gradle 9 deleted that method entirely. All real artifacts resolve from
+> `google()`/`mavenCentral()`, so 8.x builds fine; revisit once an OCR package
+> with Cyrillic support ships a modern build script.
 
 See the architecture overview in `lib/` (feature-first: `core`, `data`,
 `features/{scanner,editor,ocr,library,export,settings}`).

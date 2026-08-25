@@ -19,8 +19,13 @@ pluginManagement {
 
 plugins {
     id("dev.flutter.flutter-plugin-loader") version "1.0.0"
-    id("com.android.application") version "9.0.1" apply false
-    id("org.jetbrains.kotlin.android") version "2.3.20" apply false
+    // AGP 8.x / Gradle 8.x: the Tesseract OCR plugin still declares the
+    // long-removed `jcenter()` repository, and Gradle 9 deleted that method
+    // outright. On Gradle 8 the call resolves harmlessly (all real artifacts
+    // come from google()/mavenCentral()), so we stay on 8.x until an OCR
+    // package with Cyrillic support ships a modern build script.
+    id("com.android.application") version "8.7.3" apply false
+    id("org.jetbrains.kotlin.android") version "2.1.0" apply false
 }
 
 include(":app")

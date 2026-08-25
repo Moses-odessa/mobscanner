@@ -24,5 +24,10 @@ curl -LO https://github.com/tesseract-ocr/tessdata_fast/raw/main/rus.traineddata
 curl -LO https://github.com/tesseract-ocr/tessdata_fast/raw/main/ukr.traineddata
 ```
 
-The `flutter_tesseract_ocr` plugin loads these bundled assets at runtime.
+The `tesseract_ocr` plugin loads these bundled assets at runtime on Android.
+The file list must also be mirrored in `assets/tessdata_config.json`.
+
+On **iOS** the plugin uses Apple's Vision framework instead, which recognizes
+Russian and Ukrainian natively — no traineddata needed there.
+
 After adding files, run `flutter pub get` and rebuild.
