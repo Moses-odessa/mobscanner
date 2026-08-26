@@ -32,6 +32,23 @@ vendored copy is source-only (~205 KB, no binaries — `tesseract4android` comes
 from Maven Central); every local change is documented at the top of
 [`android/build.gradle`](packages/tesseract_ocr/android/build.gradle).
 
+### Behind a TLS-intercepting proxy or antivirus
+
+If dependency downloads fail with PKIX / `unable to find valid certification
+path` errors, your proxy or antivirus is presenting a root CA that the JDK does
+not trust. Point Java at the OS certificate store from your **machine-local**
+Gradle config — `~/.gradle/gradle.properties` on Linux/macOS,
+`%USERPROFILE%\.gradle\gradle.properties` on Windows:
+
+```properties
+# Windows only
+systemProp.javax.net.ssl.trustStoreType=Windows-ROOT
+```
+
+Keep this out of the repository. `Windows-ROOT` does not exist on Linux or
+macOS, and there it makes even the Gradle wrapper's own download fail with
+`problem accessing trust store` — which is exactly how it breaks CI.
+
 See the architecture overview in `lib/` (feature-first: `core`, `data`,
 `features/{scanner,editor,ocr,library,export,settings}`).
 
