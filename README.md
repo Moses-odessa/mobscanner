@@ -28,9 +28,18 @@ tesseract_ocr · cunning_document_scanner · share_plus.
 rather than pulled from pub.dev. Upstream declares the shut-down `jcenter()`
 repository, which Gradle 9 removed outright, and ships a Kotlin stub that
 collides with its own Java implementation under AGP 9's built-in Kotlin. The
-vendored copy is source-only (~205 KB, no binaries — `tesseract4android` comes
-from Maven Central); every local change is documented at the top of
-[`android/build.gradle`](packages/tesseract_ocr/android/build.gradle).
+vendored copy is source-only (no binaries — `tesseract4android` comes from
+Maven Central). Its iOS podspec also depended on `SwiftyTesseract401`, a pod
+that is not published anywhere, so `pod install` could never succeed; nothing
+imported it, because the iOS side does all its OCR through Apple's Vision
+framework. Every local change is documented at the top of
+[`android/build.gradle`](packages/tesseract_ocr/android/build.gradle) and
+[`ios/tesseract_ocr.podspec`](packages/tesseract_ocr/ios/tesseract_ocr.podspec).
+
+OCR therefore runs on two different engines: **Tesseract on Android**, **Vision
+on iOS**. On iOS 16+ Vision auto-detects the language; on iOS 14–15 the plugin
+only maps en/fr/de/es and falls back to English, so Russian and Ukrainian
+recognition needs iOS 16 or newer.
 
 ### Behind a TLS-intercepting proxy or antivirus
 
